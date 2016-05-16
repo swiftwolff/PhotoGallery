@@ -9,13 +9,19 @@ function FlickrAPI () {
                         api_key: self._apiKey,
                         text: '',
                         format: 'json',
-                        nojsoncallback: 1
+                        nojsoncallback: 1,
+                        page: 0
                     };
 };
 
 FlickrAPI.prototype.search = function (keyword) {
     var self = this;
-    self._reqObj.text = keyword;
+    if (self._reqObj.text === keyword) {
+        self._reqObj.page++;
+    } else {
+        self._reqObj.text = keyword;
+        self._reqObj.page = 1;
+    }
     return self._reqObj;
 };
 
@@ -24,7 +30,6 @@ FlickrAPI.prototype.imageDataGenerator = function (data, imageDataModel) {
     var photoData = data.photos, photos = photoData.photo;
     var base_url, image_url, thumb_url;
     var imageData = [];
-    // self._pageNum = photoData.page;
 
     for (var i = 0; i < photos.length; i++) {
         if (photos[i] && Object.keys(photos[i]).length > 0) {

@@ -10,10 +10,10 @@ function APIManager (context) {
 
 APIManager.prototype.search = function (keyword) {
     var self = this;
-    console.log('searching');
     self._apis.forEach(function (api) {
         var reqObj = api.search(keyword);
         var url = self._context._loadManager.buildUrl(api._url, reqObj);
+        console.log(url);
         self._context._loadManager.load(url, api.imageDataGenerator);
     });
 };

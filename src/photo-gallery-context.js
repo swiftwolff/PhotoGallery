@@ -18,4 +18,10 @@ PhotoGalleryContext.prototype.search = function (keyword) {
     self._apiManager.search(keyword);
 };
 
+PhotoGalleryContext.prototype.clear = function () {
+    var self = this;
+    self._dataManager.clearImageData();
+    self._viewManager.clearImageView();
+};
+
 module.exports = PhotoGalleryContext;

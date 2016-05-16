@@ -19,16 +19,16 @@ ViewManager.prototype.render = function () {
     }
 };
 
-ViewManager.prototype.append = function (data) {
+ViewManager.prototype.append = function (data, startIndex) {
     var self = this;
     if (!data && !data.length) {
         return;
     }
-    for (var i = 0; i < data.length; i++) {
+    var newData = data.slice(startIndex);
+    for (var i = 0; i < newData.length; i++) {
         var imgNode = document.createElement('img');
-        imgNode.src = data[i].thumbSrc;
-        imgNode.alt = data[i].title;
-        imgNode.style.margin = '5px';
+        imgNode.src = newData[i].thumbSrc;
+        imgNode.alt = newData[i].title;
         self._imageViewData.push(imgNode);
     }
     self.render();
@@ -37,9 +37,18 @@ ViewManager.prototype.append = function (data) {
 ViewManager.prototype.createViewElement = function () {
     var self = this;
     var divNode = document.createElement('div');
-    divNode.class = 'gallery';
+    divNode.className = 'gallery';
     self._viewElement = divNode;
     self._selector.appendChild(divNode);
+};
+
+ViewManager.prototype.clearImageView = function () {
+    var self = this;
+    if (self._viewElement) {
+        self._viewElement.remove();
+        self._viewElement = null;
+        self._imageViewData = [];
+    }
 };
 
 module.exports = ViewManager;
