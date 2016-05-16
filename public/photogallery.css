@@ -1,0 +1,137 @@
+*{
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body{
+  background-color: #fff;
+  font-family: monospace, Helvetica, Verdana, Geneva, sans-serif;
+  font-size: 16px;
+  background:url('./lake.jpg') top center;
+  background-size:cover;
+}
+
+input#search-bar{
+  width: 800px;
+  height: 50;
+  display: block;
+  margin: 0 auto;
+  padding: 0 20px;
+  font-size: 1rem;
+  border: 1px solid #D0CFCE;
+  outline: none;
+ }
+
+.leftbox {
+  display: inline-block; 
+  float: left; 
+  margin-top: 10px;
+}
+.rightbox { 
+   display: inline-block; 
+   float: right; 
+   margin-top: 10px;
+}
+
+#search-icon{
+  position: relative;
+  height: 75px;
+  top: -13px;
+  left: -75px;
+}
+
+.title{
+  padding-top: 5px;
+  padding-left: 10px;
+  font-size: 2rem;
+  font-family: BlinkMacSystemFont;
+  color: #979797;
+}
+
+#pagewrap{
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* main header */
+
+#main, nav, section, footer{
+  margin: 1%;
+}
+
+#main{
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* end of main header */
+
+/* navigation section */
+
+nav{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  margin: 0 auto;
+  width: 100%;
+  background-color: white;
+}
+
+nav ul{
+  list-style-type: none;
+  text-align: center;
+}
+
+nav ul li{
+  display: inline-block;
+  text-align: center;
+/*  padding: 20px;
+  height: 20%;*/
+}
+
+nav ul li a{
+  text-decoration: none;
+  color: #979797;
+  padding: 20px;
+}
+
+/* end of navigation section*/
+
+/* left column of first content */
+.left-section{
+  float: left;
+  width: 48%; /* 455/960*/
+  height: auto;
+  padding: 20px;
+  line-height: 1.8;
+  text-align: center;
+}
+
+.left-section h3{
+  text-align: center;
+  padding: 15px;
+}
+/* end of left column of first content */
+
+/* right column of first content */
+.right-section{
+  float: right;
+  width: 48%; /* 455/960*/
+  height: auto;
+  padding: 20px;
+  line-height: 1.8;
+  text-indent: 5px;
+  text-align: center;
+}
+
+.right-section h3{
+  text-align: center;
+  padding: 15px;
+}

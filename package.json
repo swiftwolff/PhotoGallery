@@ -1,0 +1,26 @@
+{
+  "name": "photo-gallery",
+  "version": "1.0.0",
+  "description": "A web app that shows photo gallery from popular image api",
+  "main": "src/photo-gallery.js",
+  "scripts": {
+    "start": "nodemon ./server.js",
+    "lint": "jshint -c .jshintrc src/*.js && echo 'No linting error found.'",
+    "build": "npm run lint && mkdir -p ./artifacts/ && npm run build-js",
+    "build-js": "browserify -r ./src/photo-gallery.js:photogallery > ./artifacts/photogallery.js"
+  },
+  "author": "Jeff Hsu",
+  "license": "ISC",
+  "dependencies": {
+    "jscs": "*",
+    "browserify": "*",
+    "jshint": "*",
+    "precommit-hook": "*",
+    "jsdoc": "*",
+    "express": "*",
+    "nodemon": "*"
+  },
+  "pre-commit": [
+    "lint"
+  ]
+}
