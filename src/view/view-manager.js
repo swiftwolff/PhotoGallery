@@ -1,23 +1,19 @@
 /* globals document */
 'use strict';
+var LightBoxManager = require('./lightbox-manager');
 
 function ViewManager (context, selector) {
     var self = this;
+
+    self.DETAIL_PRELOAD_NUM = 5;
+
     self._context = context;
     self._imageViewData = [];
+    self._imageDetailData = [];
     self._selector = selector;
     self._viewElement = null;
+    self._lightboxManager = new LightBoxManager(selector);
 }
-
-ViewManager.prototype.render = function () {
-    var self = this;
-    if (!self._viewElement) {
-        self.createViewElement();
-    }
-    for (var i = 0; i < self._imageViewData.length; i++) {
-        self._viewElement.appendChild(self._imageViewData[i]);
-    }
-};
 
 ViewManager.prototype.append = function (data, startIndex) {
     var self = this;
@@ -26,12 +22,36 @@ ViewManager.prototype.append = function (data, startIndex) {
     }
     var newData = data.slice(startIndex);
     for (var i = 0; i < newData.length; i++) {
-        var imgNode = document.createElement('img');
-        imgNode.src = newData[i].thumbSrc;
-        imgNode.alt = newData[i].title;
-        self._imageViewData.push(imgNode);
+        var linkNode = document.createElement('a');
+        linkNode.href = newData[i].imageSrc;
+        // TODO:
+        // closure problem here, we will lose it, fix later
+        linkNode.onclick = self.createDetailImage.bind(self, linkNode);
+        var img = document.createElement('img');
+        img.src = newData[i].thumbSrc;
+        img.alt = newData[i].title;
+        img.className = 'thumbnail';
+        linkNode.appendChild(img);
+        self._imageViewData.push(linkNode);
     }
-    self.render();
+    self.renderGallery();
+};
+
+ViewManager.prototype.createDetailImage = function () {
+    var self = this;
+
+    var args = Array.prototype.slice.call(arguments);
+    var linkNode = args[0];
+    var event = args[1];
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!linkNode.href || !linkNode.href.length) {
+        return;
+    }
+    // render the view in lightbox
+    self._lightboxManager.render(linkNode);
 };
 
 ViewManager.prototype.createViewElement = function () {
@@ -48,6 +68,16 @@ ViewManager.prototype.clearImageView = function () {
         self._viewElement.remove();
         self._viewElement = null;
         self._imageViewData = [];
+    }
+};
+
+ViewManager.prototype.renderGallery = function () {
+    var self = this;
+    if (!self._viewElement) {
+        self.createViewElement();
+    }
+    for (var i = 0; i < self._imageViewData.length; i++) {
+        self._viewElement.appendChild(self._imageViewData[i]);
     }
 };
 

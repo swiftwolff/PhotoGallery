@@ -35,7 +35,7 @@ FlickrAPI.prototype.imageDataGenerator = function (data, imageDataModel) {
         if (photos[i] && Object.keys(photos[i]).length > 0) {
             base_url = 'https://farm' + photos[i].farm + '.staticflickr.com/' + 
                         photos[i].server + '/' + photos[i].id + '_' + photos[i].secret;
-            image_url = base_url + '.jpg';
+            image_url = base_url + '_z.jpg';
             thumb_url = base_url + '_q.jpg';
             
             var newImageData = JSON.parse(JSON.stringify(imageDataModel));
@@ -45,7 +45,6 @@ FlickrAPI.prototype.imageDataGenerator = function (data, imageDataModel) {
             imageData.push(newImageData);
         }
     }
-
     return imageData;
 };
 

@@ -18,12 +18,4 @@ APIManager.prototype.search = function (keyword) {
     });
 };
 
-APIManager.prototype.numPerPage = function () {
-    console.log('searching');
-};
-
-APIManager.prototype.nextPage = function () {
-    console.log('nextBatch');
-};
-
 module.exports = APIManager;
