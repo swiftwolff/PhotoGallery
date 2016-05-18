@@ -12,10 +12,12 @@ LoadManager.prototype.load = function (url, cb) {
         if (self._xhr.readyState == 4 && self._xhr.status == 200) {
             var respObj = JSON.parse(self._xhr.responseText);
             self._context._dataManager.append(respObj, cb);
+            self._context._viewManager.hideLoadingBar();
         }
     };
     self._xhr.open('GET', url, true);
     self._xhr.send();
+    self._context._viewManager.showLoadingBar();
 };
 
 LoadManager.prototype.buildUrl = function (url, parameters) {

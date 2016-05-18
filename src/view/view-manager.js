@@ -5,15 +5,38 @@ var LightBoxManager = require('./lightbox-manager');
 function ViewManager (context, selector) {
     var self = this;
 
-    self.DETAIL_PRELOAD_NUM = 5;
-
+    self._document = window.document;
     self._context = context;
     self._imageViewData = [];
     self._imageDetailData = [];
     self._selector = selector;
     self._viewElement = null;
-    self._lightboxManager = new LightBoxManager(selector);
+    self._loadingBar = self.createLoadingBar();
+    self._selector.appendChild(self._loadingBar);
+    self._lightboxManager = new LightBoxManager(selector, self);
 }
+
+ViewManager.prototype.createLoadingBar = function () {
+    var self = this;
+    if (self._loadingBar) {
+        return;
+    }
+    var loadingBar = self._document.createElement('div');
+    loadingBar.id = 'loading';
+
+    return loadingBar;
+};
+
+ViewManager.prototype.showLoadingBar = function () {
+    var self = this;
+    self._loadingBar.style.display = 'block';
+    self._loadingBar.style.marginTop = window.scrollY;
+};
+
+ViewManager.prototype.hideLoadingBar = function () {
+    var self = this;
+    self._loadingBar.style.display = 'none';
+};
 
 ViewManager.prototype.append = function (data, startIndex) {
     var self = this;

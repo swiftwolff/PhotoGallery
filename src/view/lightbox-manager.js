@@ -2,17 +2,18 @@
 /* globals document */
 'use strict';
 
-function LightBoxManager (selector) {
+function LightBoxManager (selector, viewManager) {
     var self = this;
 
-    self.DETAIL_PRELOAD_NUM = 5;
     self._selector = selector;
+    self._viewManager = viewManager;
     self._document = window.document;
     self._whiteOverlay = null;
     self._blackOverlay = null;
     self._nextNav = null;
     self._prevNav = null;
     self._titleBar = null;
+    // self._loadingBar = null;
     self.init();
 }
 
@@ -23,12 +24,25 @@ LightBoxManager.prototype.init = function () {
     self._nextNav = self.createNextNav();
     self._prevNav = self.createPrevNav();
     self._titleBar = self.createTitleBar();
+    // self._loadingBar = self.createLoadingBar();
     self._selector.appendChild(self._whiteOverlay);
     self._selector.appendChild(self._blackOverlay);
     self._selector.appendChild(self._nextNav);
     self._selector.appendChild(self._prevNav);
     self._selector.appendChild(self._titleBar);
+    // self._selector.appendChild(self._loadingBar);
 };
+
+// LightBoxManager.prototype.createLoadingBar = function () {
+//     var self = this;
+//     if (self._loadingBar) {
+//         return;
+//     }
+//     var loadingBar = self._document.createElement('div');
+//     loadingBar.id = 'loading';
+
+//     return loadingBar;
+// };
 
 LightBoxManager.prototype.createNextNav = function () {
     var self = this;
@@ -98,7 +112,9 @@ LightBoxManager.prototype.render = function (linkNode) {
         img.alt = linkNode.firstChild.alt;
     }
     img.onload = self.imgOnLoadCallBack.bind(self, img);
-
+    self._viewManager.showLoadingBar();
+    // self._loadingBar.style.display = 'block';
+    // self._loadingBar.style.marginTop = window.scrollY;
     self._whiteOverlay.appendChild(img);
 };
 
@@ -119,6 +135,8 @@ LightBoxManager.prototype.turnOnLightBox = function (imgNode) {
     self._blackOverlay.setAttribute('style', 'margin-top: ' + scrollY + ';');
     self._nextNav.setAttribute('style', 'margin-top: ' + scrollY + ';');
     self._prevNav.setAttribute('style', 'margin-top: ' + scrollY + ';');
+    self._viewManager.hideLoadingBar();
+    // self._loadingBar.style.display = 'none';
     // turn on both whiteOverlay and blackOverlay
     self._whiteOverlay.style.display = 'block';
     self._blackOverlay.style.display = 'block';
