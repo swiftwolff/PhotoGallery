@@ -45,19 +45,21 @@ ViewManager.prototype.append = function (data, startIndex) {
     }
     var newData = data.slice(startIndex);
     for (var i = 0; i < newData.length; i++) {
+        if (!newData[i].imageSrc || !newData[i].imageSrc.length) {
+            continue;
+        }
         var linkNode = document.createElement('a');
         linkNode.href = newData[i].imageSrc;
-        // TODO:
-        // closure problem here, we will lose it, fix later
         linkNode.onclick = self.createDetailImage.bind(self, linkNode);
         var img = document.createElement('img');
         img.src = newData[i].thumbSrc;
         img.alt = newData[i].title;
         img.className = 'thumbnail';
+        img.setAttribute('data-index', i + startIndex);
         linkNode.appendChild(img);
         self._imageViewData.push(linkNode);
     }
-    self.renderGallery();
+    self.renderGallery(startIndex);
 };
 
 ViewManager.prototype.createDetailImage = function () {
@@ -91,15 +93,16 @@ ViewManager.prototype.clearImageView = function () {
         self._viewElement.remove();
         self._viewElement = null;
         self._imageViewData = [];
+        self._lightboxManager.destroyLightBoxImageMap();
     }
 };
 
-ViewManager.prototype.renderGallery = function () {
+ViewManager.prototype.renderGallery = function (startIndex) {
     var self = this;
     if (!self._viewElement) {
         self.createViewElement();
     }
-    for (var i = 0; i < self._imageViewData.length; i++) {
+    for (var i = startIndex; i < self._imageViewData.length; i++) {
         self._viewElement.appendChild(self._imageViewData[i]);
     }
 };

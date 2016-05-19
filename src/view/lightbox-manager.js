@@ -13,7 +13,8 @@ function LightBoxManager (selector, viewManager) {
     self._nextNav = null;
     self._prevNav = null;
     self._titleBar = null;
-    // self._loadingBar = null;
+    self._currentViewingImageIndex = -1;
+    self._lightBoxImageMap = {};
     self.init();
 }
 
@@ -24,25 +25,14 @@ LightBoxManager.prototype.init = function () {
     self._nextNav = self.createNextNav();
     self._prevNav = self.createPrevNav();
     self._titleBar = self.createTitleBar();
-    // self._loadingBar = self.createLoadingBar();
+
     self._selector.appendChild(self._whiteOverlay);
     self._selector.appendChild(self._blackOverlay);
     self._selector.appendChild(self._nextNav);
     self._selector.appendChild(self._prevNav);
     self._selector.appendChild(self._titleBar);
-    // self._selector.appendChild(self._loadingBar);
+
 };
-
-// LightBoxManager.prototype.createLoadingBar = function () {
-//     var self = this;
-//     if (self._loadingBar) {
-//         return;
-//     }
-//     var loadingBar = self._document.createElement('div');
-//     loadingBar.id = 'loading';
-
-//     return loadingBar;
-// };
 
 LightBoxManager.prototype.createNextNav = function () {
     var self = this;
@@ -51,7 +41,7 @@ LightBoxManager.prototype.createNextNav = function () {
     }
     var nextNav = self._document.createElement('div');
     nextNav.className = 'next_arrow';
-
+    nextNav.onclick = self.navToNextPhoto.bind(this);
     return nextNav;
 };
 
@@ -62,8 +52,42 @@ LightBoxManager.prototype.createPrevNav = function () {
     }
     var prevNav = self._document.createElement('div');
     prevNav.className = 'prev_arrow';
-
+    prevNav.onclick = self.navToPrevPhoto.bind(this);
     return prevNav;
+};
+
+LightBoxManager.prototype.navToNextPhoto = function () {
+    var self = this;
+    var args = Array.prototype.slice.call(arguments);
+    var event = args[0];
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (self._currentViewingImageIndex < 0) {
+        return;
+    }
+    var linkNode = self._viewManager._imageViewData[++self._currentViewingImageIndex];
+    self.render(linkNode);
+};
+
+LightBoxManager.prototype.navToPrevPhoto = function () {
+    var self = this;
+    var args = Array.prototype.slice.call(arguments);
+    var event = args[0];
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (self._currentViewingImageIndex < 0) {
+        return;
+    }
+    if (self._currentViewingImageIndex - 1 < 0) {
+        hidePrevNav
+        return;
+    }
+    var linkNode = self._viewManager._imageViewData[--self._currentViewingImageIndex];
+    self.render(linkNode);
 };
 
 LightBoxManager.prototype.createTitleBar = function () {
@@ -99,22 +123,60 @@ LightBoxManager.prototype.createBlackOverlay = function () {
     return blackOverlay;
 };
 
+LightBoxManager.prototype.detachImageFromLightBox = function () {
+    var self = this;
+    var child = self._whiteOverlay.firstChild;
+    if (child) {
+        self._whiteOverlay.removeChild(child);
+    }
+};
+
+LightBoxManager.prototype.enableNavigation = function () {
+    var self = this;
+
+    if (self._currentViewingImageIndex === 0) {
+        self._prevNav.style.display = 'none';
+    } else {
+        self._prevNav.style.display = 'block';
+    }
+
+    if (self._currentViewingImageIndex ===
+        self._viewManager._imageViewData.length - 1) {
+        self._nextNav.style.display = 'none';
+    } else {
+        self._nextNav.style.display = 'block';
+    }
+};
+
 LightBoxManager.prototype.render = function (linkNode) {
     var self = this;
     if (!self._selector.children[0] || !linkNode) {
         return;
     }
 
-    var img = self._document.createElement('img');
-    img.src = linkNode.href;
-    // set the image title
+    self.detachImageFromLightBox();
+    var img;
+
     if (linkNode.firstChild) {
-        img.alt = linkNode.firstChild.alt;
+        self._currentViewingImageIndex = parseInt(linkNode.firstChild.getAttribute('data-index'));
     }
+
+    if (self._lightBoxImageMap[self._currentViewingImageIndex]) {
+        // we've already visited this image before, just append it, no creation and fetching
+        img = self._lightBoxImageMap[self._currentViewingImageIndex];
+        self._whiteOverlay.appendChild(img);
+        self.turnOnLightBox(img);
+        return;
+    }
+
+    img = self._document.createElement('img');
+    img.src = linkNode.href;
+    img.alt = linkNode.firstChild ? linkNode.firstChild.alt : '';
+
     img.onload = self.imgOnLoadCallBack.bind(self, img);
     self._viewManager.showLoadingBar();
-    // self._loadingBar.style.display = 'block';
-    // self._loadingBar.style.marginTop = window.scrollY;
+    // save img node to map, so we don't have to fetch again if user clicks on the same image
+    self._lightBoxImageMap[self._currentViewingImageIndex] = img;
     self._whiteOverlay.appendChild(img);
 };
 
@@ -136,12 +198,10 @@ LightBoxManager.prototype.turnOnLightBox = function (imgNode) {
     self._nextNav.setAttribute('style', 'margin-top: ' + scrollY + ';');
     self._prevNav.setAttribute('style', 'margin-top: ' + scrollY + ';');
     self._viewManager.hideLoadingBar();
-    // self._loadingBar.style.display = 'none';
     // turn on both whiteOverlay and blackOverlay
     self._whiteOverlay.style.display = 'block';
     self._blackOverlay.style.display = 'block';
-    self._nextNav.style.display = 'block';
-    self._prevNav.style.display = 'block';
+    self.enableNavigation();
     self._titleBar.style.display = 'block';
     // lock the scroll
     self._document.body.style.overflow = 'hidden';
@@ -157,9 +217,7 @@ LightBoxManager.prototype.turnOffLightBox = function () {
     self._nextNav.style.display = 'none';
     self._prevNav.style.display = 'none';
     self._titleBar.style.display = 'none';
-    while (self._whiteOverlay.firstChild) {
-        self._whiteOverlay.removeChild(self._whiteOverlay.firstChild);
-    }
+    self.detachImageFromLightBox();
 }
 
 LightBoxManager.prototype.imgOnLoadCallBack = function () {
@@ -172,6 +230,11 @@ LightBoxManager.prototype.imgOnLoadCallBack = function () {
         self.turnOnLightBox(imgNode);
         self._blackOverlay.onclick = self.turnOffLightBox.bind(this);
     }
+};
+
+LightBoxManager.prototype.destroyLightBoxImageMap = function () {
+    var self = this;
+    self._lightBoxImageMap = {};
 };
 
 module.exports = LightBoxManager;

@@ -108,38 +108,6 @@ nav ul li a{
 
 /* end of navigation section*/
 
-/* left column of first content */
-.left-section{
-  float: left;
-  width: 48%; /* 455/960*/
-  height: auto;
-  padding: 20px;
-  line-height: 1.8;
-  text-align: center;
-}
-
-.left-section h3{
-  text-align: center;
-  padding: 15px;
-}
-/* end of left column of first content */
-
-/* right column of first content */
-.right-section{
-  float: right;
-  width: 48%; /* 455/960*/
-  height: auto;
-  padding: 20px;
-  line-height: 1.8;
-  text-indent: 5px;
-  text-align: center;
-}
-
-.right-section h3{
-  text-align: center;
-  padding: 15px;
-}
-
 .black_overlay{
     display: none;
     position: absolute;
@@ -161,7 +129,7 @@ nav ul li a{
     left: 25%;
     width: 50%;
     height: 50%;
-    background-color: white;
+    background-color: transparent;
     z-index:1002;
     overflow: auto;
 }
@@ -171,9 +139,9 @@ nav ul li a{
     position: absolute;
     top: 40%;
     left: 78%;
-    width: 10%;
-    height: 33%;
-    background: url('./right.png') top center;
+    width: 64px;
+    height: 64px;
+    background-image: url('./right.png');
     background-repeat: no-repeat;
     z-index:1003;
     overflow: auto;
@@ -184,10 +152,10 @@ nav ul li a{
     display: none;
     position: absolute;
     top: 40%;
-    left: 12%;
-    width: 10%;
-    height: 33%;
-    background: url('./left.png') top center;
+    left: 15%;
+    width: 64px;
+    height: 64px;
+    background-image: url('./left.png');
     background-repeat: no-repeat;
     z-index:1003;
     overflow: auto;
@@ -205,9 +173,9 @@ nav ul li a{
     z-index:1003;
     overflow: auto;
     text-align: center;
-    -moz-opacity: 0.3;
-    opacity:.30;
-    filter: alpha(opacity=30);
+    -moz-opacity: 0.7;
+    opacity:.70;
+    filter: alpha(opacity=70);
     color: white;
     font-family: monospace, Helvetica, Verdana, Geneva, sans-serif;
 }

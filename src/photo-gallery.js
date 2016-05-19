@@ -35,15 +35,4 @@ PhotoGallery.prototype.nextPage = function () {
     }
 };
 
-// PhotoGallery.prototype.loadDetail = function (event) {
-//     var self = this;
-//     event.preventDefault();
-//     event.stopPropagation();
-//     if (!self.href || !self.href.length) {
-//         return;
-//     }
-//     self._context.loadDetail(self.href);
-//     console.log('loading detail url is ' + self.href);
-// };
-
 module.exports = PhotoGallery;
