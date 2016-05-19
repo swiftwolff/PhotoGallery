@@ -17,6 +17,8 @@ A photo gallery that has ability to search photos using defined api
     brew install nodejs
     # install required packages
     npm install
+    # build js file
+    npm run build
     # start node js server (host locally at http://localhost:3030/)
     npm start
     ```
