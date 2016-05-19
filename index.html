@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+  <title>Photo Gallery</title>
+  <link rel="stylesheet" href="./photogallery.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="./photogallery.js"></script>
+</head>
+<body>
+    <div id="pagewrap">
+    <nav>
+        <div class="rightbox"><a href="#"><img id="search-icon" src="http://www.endlessicons.com/wp-content/uploads/2012/12/search-icon.png"></a></div>
+        <div class="rightbox"><input type="text" id="search-bar" onkeypress="handleEnter(this, event)" placeholder="What photo are you looking for?"></div>
+        <div class="leftbox title">Photo Gallery</div>
+    </nav>
+    <div id="main">
+    </div>
+    </div>
+    <script type="text/javascript">
+        var PhotoGallery = require('photogallery');
+        var photoGallery = new PhotoGallery(document.getElementById("main"));
+        document.getElementById("search-icon").onclick = function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var keyword = document.getElementById("search-bar").value;
+            photoGallery.search(keyword);
+        }
+        function handleEnter (field, event) {
+            if (event.keyCode === 13) {
+                var keyword = field.value;
+                photoGallery.search(keyword);
+            }
+        }
+    </script>
+</body>
+</html>

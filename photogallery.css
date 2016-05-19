@@ -1,0 +1,175 @@
+*{
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body{
+  background-color: #fff;
+  font-family: monospace, Helvetica, Verdana, Geneva, sans-serif;
+  font-size: 16px;
+  background:url('./lake.jpg') top center;
+  background-size:cover;
+}
+
+/* page */
+#pagewrap{
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* main header */
+
+#main, nav, section, footer{
+  margin: 1%;
+}
+
+#main{
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* end of main header */
+
+/* navigation section */
+
+nav{
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  margin: 0 auto;
+  width: 100%;
+  background-color: white;
+}
+
+input#search-bar{
+  width: 800px;
+  height: 50;
+  display: block;
+  margin: 0 auto;
+  padding: 0 20px;
+  font-size: 1rem;
+  border: 1px solid #D0CFCE;
+  outline: none;
+ }
+
+.leftbox{
+  display: inline-block; 
+  float: left; 
+  margin-top: 10px;
+}
+.rightbox{ 
+   display: inline-block; 
+   float: right; 
+   margin-top: 10px;
+}
+
+#search-icon{
+  position: relative;
+  height: 75px;
+  top: -12px;
+  left: -75px;
+}
+
+/* end of navigation section*/
+
+/* photo gallery */
+.thumbnail{
+  margin: 5px;
+}
+
+/* lightbox */
+.black_overlay{
+    display: none;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index:1001;
+    -moz-opacity: 0.8;
+    opacity:.80;
+    filter: alpha(opacity=80);
+}
+
+.white_content {
+    display: none;
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    background-color: transparent;
+    z-index:1002;
+    overflow: auto;
+}
+
+.next_arrow{
+    display: none;
+    position: absolute;
+    top: 40%;
+    left: 78%;
+    width: 64px;
+    height: 64px;
+    background-image: url('./right.png');
+    background-repeat: no-repeat;
+    z-index:1003;
+    overflow: auto;
+    cursor: pointer;
+}
+
+.prev_arrow{
+    display: none;
+    position: absolute;
+    top: 40%;
+    left: 15%;
+    width: 64px;
+    height: 64px;
+    background-image: url('./left.png');
+    background-repeat: no-repeat;
+    z-index:1003;
+    overflow: auto;
+    cursor: pointer;
+}
+
+.title{
+  padding-top: 5px;
+  padding-left: 10px;
+  font-size: 2rem;
+  font-family: BlinkMacSystemFont;
+  color: #979797;
+}
+
+.title_bar{
+    display: none;
+    position: absolute;
+    top: 95%;
+    left: 25%;
+    width: 50%;
+    height: 5%;
+    background-color: black;
+    z-index:1003;
+    overflow: auto;
+    text-align: center;
+    -moz-opacity: 0.7;
+    opacity:.70;
+    filter: alpha(opacity=70);
+    color: white;
+    font-family: monospace, Helvetica, Verdana, Geneva, sans-serif;
+}
+
+#loading{
+    display: none;
+    position: absolute; 
+    width: 100%; 
+    height: 100%; 
+    background: url('./loading.gif') no-repeat center center;
+    z-index:2000;
+}
