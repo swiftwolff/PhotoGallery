@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+* Installed vendor's API class.  Each vendor api class is required
+* to implement two methods (1) search (2) imageDataGenerator (callback)
+* @class
+*/
 function FlickrAPI () {
     var self = this;
     self._url = 'https://api.flickr.com/services/rest/';
@@ -14,6 +19,12 @@ function FlickrAPI () {
                     };
 };
 
+/**
+* Fetch meta data of photos from the image api
+* @param {string} keyword
+* @returns {object} request object
+* @public
+*/
 FlickrAPI.prototype.search = function (keyword) {
     var self = this;
     if (self._reqObj.text === keyword) {
@@ -25,6 +36,13 @@ FlickrAPI.prototype.search = function (keyword) {
     return self._reqObj;
 };
 
+/**
+* Callback function that generates image data into our imageDataModel schema
+* @param {object} data
+* @param {object} imageDataModel
+* @returns {object} imageData
+* @public
+*/
 FlickrAPI.prototype.imageDataGenerator = function (data, imageDataModel) {
     var self = this;
     var photoData = data.photos, photos = photoData.photo;

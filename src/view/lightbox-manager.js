@@ -2,6 +2,13 @@
 /* globals document */
 'use strict';
 
+/**
+* LightBoxManager is in charge of rendering detailed
+* photo in lightbox experience
+* @param {HTMLElement} selector
+* @param {ViewManager} viewManager
+* @class
+*/
 function LightBoxManager (selector, viewManager) {
     var self = this;
 
@@ -18,13 +25,18 @@ function LightBoxManager (selector, viewManager) {
     self.init();
 }
 
+/**
+* Initializes LightBoxManager, building required
+* dom node
+* @public
+*/
 LightBoxManager.prototype.init = function () {
     var self = this;
-    self._whiteOverlay = self.createWhiteOverlay();
-    self._blackOverlay = self.createBlackOverlay();
-    self._nextNav = self.createNextNav();
-    self._prevNav = self.createPrevNav();
-    self._titleBar = self.createTitleBar();
+    self._whiteOverlay = self._createWhiteOverlay();
+    self._blackOverlay = self._createBlackOverlay();
+    self._nextNav = self._createNextNav();
+    self._prevNav = self._createPrevNav();
+    self._titleBar = self._createTitleBar();
 
     self._selector.appendChild(self._whiteOverlay);
     self._selector.appendChild(self._blackOverlay);
@@ -34,29 +46,86 @@ LightBoxManager.prototype.init = function () {
 
 };
 
-LightBoxManager.prototype.createNextNav = function () {
+/**
+* Creates next photo nav
+* @private
+*/
+LightBoxManager.prototype._createNextNav = function () {
     var self = this;
     if (self._nextNav) {
         return;
     }
     var nextNav = self._document.createElement('div');
     nextNav.className = 'next_arrow';
-    nextNav.onclick = self.navToNextPhoto.bind(this);
+    nextNav.onclick = self._navToNextPhoto.bind(this);
     return nextNav;
 };
 
-LightBoxManager.prototype.createPrevNav = function () {
+/**
+* Creates previous photo nav
+* @private
+*/
+LightBoxManager.prototype._createPrevNav = function () {
     var self = this;
     if (self._prevNav) {
         return;
     }
     var prevNav = self._document.createElement('div');
     prevNav.className = 'prev_arrow';
-    prevNav.onclick = self.navToPrevPhoto.bind(this);
+    prevNav.onclick = self._navToPrevPhoto.bind(this);
     return prevNav;
 };
 
-LightBoxManager.prototype.navToNextPhoto = function () {
+/**
+* Creates title bar
+* @private
+*/
+LightBoxManager.prototype._createTitleBar = function () {
+    var self = this;
+    if (self._titleBar) {
+        return;
+    }
+    var titleBar = self._document.createElement('div');
+    titleBar.className = 'title_bar';
+
+    return titleBar;
+};
+
+/**
+* Creates white overlay
+* @private
+*/
+LightBoxManager.prototype._createWhiteOverlay = function () {
+    var self = this;
+    if (self._whiteOverlay) {
+        return;
+    }
+    var whiteOverylay = self._document.createElement('div');
+    whiteOverylay.className = 'white_content';
+
+    return whiteOverylay;
+};
+
+/**
+* Creates black overlay
+* @private
+*/
+LightBoxManager.prototype._createBlackOverlay = function () {
+    var self = this;
+    if (self._blackOverlay) {
+        return;
+    }
+    var blackOverlay = self._document.createElement('div');
+    blackOverlay.className = 'black_overlay';
+
+    return blackOverlay;
+};
+
+/**
+* Navigate to next photo
+* @private
+*/
+LightBoxManager.prototype._navToNextPhoto = function () {
     var self = this;
     var args = Array.prototype.slice.call(arguments);
     var event = args[0];
@@ -71,7 +140,11 @@ LightBoxManager.prototype.navToNextPhoto = function () {
     self.render(linkNode);
 };
 
-LightBoxManager.prototype.navToPrevPhoto = function () {
+/**
+* Navigate to prev photo
+* @private
+*/
+LightBoxManager.prototype._navToPrevPhoto = function () {
     var self = this;
     var args = Array.prototype.slice.call(arguments);
     var event = args[0];
@@ -90,40 +163,11 @@ LightBoxManager.prototype.navToPrevPhoto = function () {
     self.render(linkNode);
 };
 
-LightBoxManager.prototype.createTitleBar = function () {
-    var self = this;
-    if (self._titleBar) {
-        return;
-    }
-    var titleBar = self._document.createElement('div');
-    titleBar.className = 'title_bar';
-
-    return titleBar;
-};
-
-LightBoxManager.prototype.createWhiteOverlay = function () {
-    var self = this;
-    if (self._whiteOverlay) {
-        return;
-    }
-    var whiteOverylay = self._document.createElement('div');
-    whiteOverylay.className = 'white_content';
-
-    return whiteOverylay;
-};
-
-LightBoxManager.prototype.createBlackOverlay = function () {
-    var self = this;
-    if (self._blackOverlay) {
-        return;
-    }
-    var blackOverlay = self._document.createElement('div');
-    blackOverlay.className = 'black_overlay';
-
-    return blackOverlay;
-};
-
-LightBoxManager.prototype.detachImageFromLightBox = function () {
+/**
+* Detach current photo in the lightbox
+* @private
+*/
+LightBoxManager.prototype._detachImageFromLightBox = function () {
     var self = this;
     var child = self._whiteOverlay.firstChild;
     if (child) {
@@ -131,7 +175,11 @@ LightBoxManager.prototype.detachImageFromLightBox = function () {
     }
 };
 
-LightBoxManager.prototype.enableNavigation = function () {
+/**
+* Enable prev and next photo navigation
+* @private
+*/
+LightBoxManager.prototype._enableNavigation = function () {
     var self = this;
 
     if (self._currentViewingImageIndex === 0) {
@@ -148,13 +196,18 @@ LightBoxManager.prototype.enableNavigation = function () {
     }
 };
 
+/**
+* Render detailed photo in lightbox
+* @param {HTMLElement} linkNode
+* @public
+*/
 LightBoxManager.prototype.render = function (linkNode) {
     var self = this;
     if (!self._selector.children[0] || !linkNode) {
         return;
     }
 
-    self.detachImageFromLightBox();
+    self._detachImageFromLightBox();
     var img;
 
     if (linkNode.firstChild) {
@@ -165,7 +218,7 @@ LightBoxManager.prototype.render = function (linkNode) {
         // we've already visited this image before, just append it, no creation and fetching
         img = self._lightBoxImageMap[self._currentViewingImageIndex];
         self._whiteOverlay.appendChild(img);
-        self.turnOnLightBox(img);
+        self._turnOnLightBox(img);
         return;
     }
 
@@ -173,14 +226,19 @@ LightBoxManager.prototype.render = function (linkNode) {
     img.src = linkNode.href;
     img.alt = linkNode.firstChild ? linkNode.firstChild.alt : '';
 
-    img.onload = self.imgOnLoadCallBack.bind(self, img);
+    img.onload = self._imgOnLoadCallBack.bind(self, img);
     self._viewManager.showLoadingBar();
     // save img node to map, so we don't have to fetch again if user clicks on the same image
     self._lightBoxImageMap[self._currentViewingImageIndex] = img;
     self._whiteOverlay.appendChild(img);
 };
 
-LightBoxManager.prototype.turnOnLightBox = function (imgNode) {
+/**
+* Enable and adjust lightbox once the image is downloaded
+* @param {HTMLElement} imgNode
+* @private
+*/
+LightBoxManager.prototype._turnOnLightBox = function (imgNode) {
     var self = this;
     // adjust the size on whiteOverlay
     self._whiteOverlay.setAttribute('style', 'top: 50%; left: 50%; width: ' + imgNode.width +
@@ -201,13 +259,18 @@ LightBoxManager.prototype.turnOnLightBox = function (imgNode) {
     // turn on both whiteOverlay and blackOverlay
     self._whiteOverlay.style.display = 'block';
     self._blackOverlay.style.display = 'block';
-    self.enableNavigation();
+    self._enableNavigation();
     self._titleBar.style.display = 'block';
     // lock the scroll
     self._document.body.style.overflow = 'hidden';
 }
 
-LightBoxManager.prototype.turnOffLightBox = function () {
+/**
+* Remove lightbox effect
+* @param {HTMLElement} imgNode
+* @private
+*/
+LightBoxManager.prototype._turnOffLightBox = function () {
     var self = this;
     // enable the scroll
     self._document.body.style.overflow = 'auto';
@@ -220,18 +283,26 @@ LightBoxManager.prototype.turnOffLightBox = function () {
     self.detachImageFromLightBox();
 }
 
-LightBoxManager.prototype.imgOnLoadCallBack = function () {
+/**
+* Turn on the light box once image finished loading
+* @public
+*/
+LightBoxManager.prototype._imgOnLoadCallBack = function () {
     var self = this;
 
     var args = Array.prototype.slice.call(arguments);
     var imgNode = args[0];
 
     if (imgNode.complete || imgNode.height && imgNode.height > 0) {
-        self.turnOnLightBox(imgNode);
-        self._blackOverlay.onclick = self.turnOffLightBox.bind(this);
+        self._turnOnLightBox(imgNode);
+        self._blackOverlay.onclick = self._turnOffLightBox.bind(this);
     }
 };
 
+/**
+* Destroy cached image view data
+* @public
+*/
 LightBoxManager.prototype.destroyLightBoxImageMap = function () {
     var self = this;
     self._lightBoxImageMap = {};

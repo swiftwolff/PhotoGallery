@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+* Image data model schema
+*/
 var imageModelSchema = {
     title: '',
     imageSrc: '',

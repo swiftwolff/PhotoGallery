@@ -5,7 +5,13 @@ var LoadManager = require('./service/load-manager');
 var DataManager = require('./model/data-manager');
 var ViewManager = require('./view/view-manager');
 
-function PhotoGalleryContext (photogallery, selector) {
+/**
+* Mediator between all the internal modules (Mediator Design Pattern)
+* @param {PhotoGallery} photogallery
+* @param {HTMLElement} selector
+* @class
+*/
+function PhotoGalleryMediator (photogallery, selector) {
     var self = this;
     self._photogallery = photogallery;
     self._apiManager = new APIManager(self);
@@ -14,20 +20,24 @@ function PhotoGalleryContext (photogallery, selector) {
     self._loadManager = new LoadManager(self);
 }
 
-PhotoGalleryContext.prototype.search = function (keyword) {
+/**
+* Fetch meta data of photos from the image api
+* @param {string} keyword
+* @public
+*/
+PhotoGalleryMediator.prototype.search = function (keyword) {
     var self = this;
     self._apiManager.search(keyword);
 };
 
-PhotoGalleryContext.prototype.loadDetail = function (url) {
-    var self = this;
-    self._loadManager.loadDetail(url);
-};
-
-PhotoGalleryContext.prototype.clear = function () {
+/**
+* Clear all the previous image data and view data
+* @public
+*/
+PhotoGalleryMediator.prototype.clear = function () {
     var self = this;
     self._dataManager.clearImageData();
     self._viewManager.clearImageView();
 };
 
-module.exports = PhotoGalleryContext;
+module.exports = PhotoGalleryMediator;
