@@ -28,6 +28,7 @@ function ViewManager (mediator, selector) {
 
 /**
 * Make loading bar
+* @returns {HTMLElement} loadingBar
 * @public
 */
 ViewManager.prototype.createLoadingBar = function () {
@@ -37,7 +38,6 @@ ViewManager.prototype.createLoadingBar = function () {
     }
     var loadingBar = self._document.createElement('div');
     loadingBar.id = 'loading';
-
     return loadingBar;
 };
 

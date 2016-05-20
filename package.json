@@ -7,7 +7,8 @@
     "start": "nodemon ./server.js",
     "lint": "jshint -c .jshintrc src/*.js && echo 'No linting error found.'",
     "build": "npm run lint && mkdir -p ./artifacts/ && npm run build-js",
-    "build-js": "browserify -r ./src/photo-gallery.js:photogallery > ./artifacts/photogallery.js"
+    "build-js": "browserify -r ./src/photo-gallery.js:photogallery > ./artifacts/photogallery.js",
+    "test": "tape 'test/unit/**/*.js'"
   },
   "author": "Jeff Hsu",
   "license": "ISC",
@@ -18,7 +19,9 @@
     "precommit-hook": "*",
     "jsdoc": "*",
     "express": "*",
-    "nodemon": "*"
+    "nodemon": "*",
+    "tape": "*",
+    "proxyquire": "*"
   },
   "pre-commit": [
     "lint"
