@@ -2,7 +2,7 @@ Photo Gallery
 ======================
 
 A photo gallery that has ability to search photos using defined api 
-,renders endless scroll of photos on the page, and show detailed image in a light box
+, renders endless scroll of photos on the page, and shows detailed image in a light box experience
 
 ## Getting Started
 
@@ -13,7 +13,7 @@ A photo gallery that has ability to search photos using defined api
     ``` bash
     # install homebrew
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    # install node js
+    # install node js (>= 0.12 version)
     brew install nodejs
     # install required packages
     npm install
@@ -29,6 +29,7 @@ A photo gallery that has ability to search photos using defined api
 | ------------------------- | ----------- |
 | `npm run build  `         | Builds the photogallery.js file |
 | `npm start`               | Host the index.html at http://localhost:3030/ |
+| `npm test`                | Run unit test |
 
 ### Design
 
@@ -46,13 +47,19 @@ The 'installed' api classes are required to implement two methods
 vendors' API in the future
 
 ##### LoadManager
-Load manager handles all the network call (api endpoint) with xhr
+Load manager handles all the network call (api endpoint) with xhr and also detects network error
+and gives warning
 
 ##### DataManager
 Data manager saves current fetched api data and process it into defined image model schema
 
 ##### ViewManager
-View manager is in charge of building and rendering view in dom level
+View manager is in charge of building and rendering view in dom level.  Using DocumentFragment for appending
+the thumbnail image wall efficiently
 
 #### LightBoxManager
-LightBoxManager renders detailed photo in lightbox experience
+LightBoxManager renders detailed photo in lightbox experience.  Using image cache to avoid multiple network calls on the same photo.  Keeps a maximum number of photos in the cache and calculate which photo to pop from the cache
+depends on users' navigation on the photos
+
+### Browser Support
+Tested on Chrome:50.0.2661.102 Safari:9.0.3 FireFox: 46.0.1 IE Edge:25.10586.0.0
