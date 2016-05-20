@@ -80,6 +80,10 @@ input#search-bar{
 /* end of navigation section*/
 
 /* photo gallery */
+img{
+  background-color: transparent;
+}
+
 .thumbnail{
   margin: 5px;
 }

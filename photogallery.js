@@ -535,7 +535,7 @@ LightBoxManager.prototype.render = function (linkNode) {
 
     img = self._document.createElement('img');
     img.src = linkNode.href;
-    img.alt = linkNode.firstChild ? linkNode.firstChild.alt : '';
+    img.alt = linkNode.firstChild ? linkNode.firstChild.getAttribute('data-title') : '';
 
     img.onload = self._imgOnLoadCallBack.bind(self, img);
     self._viewManager.showLoadingBar();
@@ -768,7 +768,7 @@ ViewManager.prototype.append = function (data, startIndex) {
         linkNode.onclick = self.createDetailImage.bind(self, linkNode);
         var img = self._document.createElement('img');
         img.src = newData[i].thumbSrc;
-        img.alt = newData[i].title;
+        img.setAttribute('data-title', newData[i].title);
         img.className = 'thumbnail';
         img.setAttribute('data-index', i + startIndex);
         linkNode.appendChild(img);
@@ -942,10 +942,10 @@ PhotoGallery.prototype.search = function (keyword) {
 PhotoGallery.prototype.nextPage = function () {
     var self = this;
     if (self._lastScrollingToEndTimestamp &&
-        Date.now() - self._lastScrollingToEndTimestamp < 1500) {
+        Date.now() - self._lastScrollingToEndTimestamp < 3000) {
         return;
     }
-    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
+    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 300) {
         self.search(self._currentKeyword);
         self._lastScrollingToEndTimestamp = Date.now();
     }
