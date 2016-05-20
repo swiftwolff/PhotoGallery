@@ -57,7 +57,7 @@ Data manager saves current fetched api data and process it into defined image mo
 View manager is in charge of building and rendering view in dom level.  Using DocumentFragment for appending
 the thumbnail image wall efficiently
 
-#### LightBoxManager
+##### LightBoxManager
 LightBoxManager renders detailed photo in lightbox experience.  Using image cache to avoid multiple network calls on the same photo.  Keeps a maximum number of photos in the cache and calculate which photo to pop from the cache
 depends on users' navigation on the photos
 
