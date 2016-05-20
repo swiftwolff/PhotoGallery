@@ -43,10 +43,10 @@ PhotoGallery.prototype.search = function (keyword) {
 PhotoGallery.prototype.nextPage = function () {
     var self = this;
     if (self._lastScrollingToEndTimestamp &&
-        Date.now() - self._lastScrollingToEndTimestamp < 1500) {
+        Date.now() - self._lastScrollingToEndTimestamp < 3000) {
         return;
     }
-    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
+    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 300) {
         self.search(self._currentKeyword);
         self._lastScrollingToEndTimestamp = Date.now();
     }

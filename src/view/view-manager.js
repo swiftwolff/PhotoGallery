@@ -96,7 +96,7 @@ ViewManager.prototype.append = function (data, startIndex) {
         linkNode.onclick = self.createDetailImage.bind(self, linkNode);
         var img = self._document.createElement('img');
         img.src = newData[i].thumbSrc;
-        img.alt = newData[i].title;
+        img.setAttribute('data-title', newData[i].title);
         img.className = 'thumbnail';
         img.setAttribute('data-index', i + startIndex);
         linkNode.appendChild(img);

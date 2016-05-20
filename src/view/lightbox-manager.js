@@ -227,7 +227,7 @@ LightBoxManager.prototype.render = function (linkNode) {
 
     img = self._document.createElement('img');
     img.src = linkNode.href;
-    img.alt = linkNode.firstChild ? linkNode.firstChild.alt : '';
+    img.alt = linkNode.firstChild ? linkNode.firstChild.getAttribute('data-title') : '';
 
     img.onload = self._imgOnLoadCallBack.bind(self, img);
     self._viewManager.showLoadingBar();
