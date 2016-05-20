@@ -21,7 +21,10 @@ function LoadManager (mediator) {
 LoadManager.prototype.load = function (url, cb) {
     var self = this;
     self._xhr.onreadystatechange = function () {
-        if (self._xhr.readyState == 4 && self._xhr.status == 200) {
+        if (self._xhr.status && self._xhr.status < 200 || self._xhr.status >= 300) {
+            self._mediator._viewManager.showWarning('No data available!', 2);
+        }
+        if (self._xhr.status && self._xhr.readyState == 4 && self._xhr.status == 200) {
             var respObj = JSON.parse(self._xhr.responseText);
             self._mediator._dataManager.append(respObj, cb);
             self._mediator._viewManager.hideLoadingBar();
@@ -48,6 +51,16 @@ LoadManager.prototype.buildUrl = function (url, parameters) {
         url = url + '?' + qs;
     }
     return url;
+};
+
+/**
+* Destroy LoadManager
+* @public
+*/
+LoadManager.prototype.destroy = function () {
+    var self = this;
+    self._mediator = null;
+    self._xhr = null;
 };
 
 module.exports = LoadManager;

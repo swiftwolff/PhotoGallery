@@ -52,4 +52,16 @@ PhotoGallery.prototype.nextPage = function () {
     }
 };
 
+/**
+* Destroy photo gallery instance
+* @public
+*/
+PhotoGallery.prototype.destroy = function () {
+    var self = this;
+    if (self._mediator) {
+        self._mediator.destroy();
+    }
+    self._mediator = null;
+};
+
 module.exports = PhotoGallery;

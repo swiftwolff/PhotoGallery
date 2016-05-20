@@ -18,8 +18,11 @@ function ViewManager (mediator, selector) {
     self._imageDetailData = [];
     self._selector = selector;
     self._viewElement = null;
+    self._fragment = null;
     self._loadingBar = self.createLoadingBar();
+    self._warningDiv = self.createWarningDiv();
     self._selector.appendChild(self._loadingBar);
+    self._selector.appendChild(self._warningDiv);
     self._lightboxManager = new LightBoxManager(selector, self);
 }
 
@@ -36,6 +39,21 @@ ViewManager.prototype.createLoadingBar = function () {
     loadingBar.id = 'loading';
 
     return loadingBar;
+};
+
+/**
+* Make loading bar
+* @public
+*/
+ViewManager.prototype.createWarningDiv = function () {
+    var self = this;
+    if (self._warningDiv) {
+        return;
+    }
+    var warningDiv = self._document.createElement('div');
+    warningDiv.id = 'warning';
+
+    return warningDiv;
 };
 
 /**
@@ -127,7 +145,10 @@ ViewManager.prototype.createViewElement = function () {
 ViewManager.prototype.clearImageView = function () {
     var self = this;
     if (self._viewElement) {
-        self._viewElement.remove();
+        // remove all the children
+        while (self._viewElement.firstChild) {
+            self._viewElement.removeChild(self._viewElement.firstChild);
+        }
         self._viewElement = null;
         self._imageViewData = [];
         self._lightboxManager.destroyLightBoxImageMap();
@@ -143,9 +164,62 @@ ViewManager.prototype.renderGallery = function (startIndex) {
     if (!self._viewElement) {
         self.createViewElement();
     }
+    self._fragment = self._document.createDocumentFragment();
     for (var i = startIndex; i < self._imageViewData.length; i++) {
-        self._viewElement.appendChild(self._imageViewData[i]);
+        self._fragment.appendChild(self._imageViewData[i]);
     }
+    self._viewElement.appendChild(self._fragment);
+};
+
+/**
+* Show warning message for a period of time
+* @param {string} description - description of the warning
+* @param {duration} duration - duration of the warning in sec
+* @private
+*/
+ViewManager.prototype.showWarning = function (description, sec) {
+    var self = this;
+    self._warningDiv.innerHTML = description;
+    self._warningDiv.style.display = 'block';
+    self._warningDiv.style.marginTop = window.scrollY;
+    var callback = function () {
+        self._hideWarning();
+    };
+    setTimeout(callback, sec * 1000);
+};
+
+/**
+* Hide warning message
+* @private
+*/
+ViewManager.prototype._hideWarning = function () {
+    var self = this;
+    self._warningDiv.style.display = 'none';
+};
+
+/**
+* Destroy View Manager
+* @private
+*/
+ViewManager.prototype.destroy = function () {
+    var self = this;
+    self._selector.removeChild(self._loadingBar);
+    self._selector.removeChild(self._warningDiv);
+    if (self._viewElement) {
+        self._selector.removeChild(self._viewElement);
+    }
+    self.clearImageView();
+    self._lightboxManager.destroy();
+    self._document = null;
+    self._mediator = null;
+    self._imageViewData = null;
+    self._imageDetailData = null;
+    self._selector = null;
+    self._viewElement = null;
+    self._loadingBar = null;
+    self._warningDiv = null;
+    self._lightboxManager = null;
+    self._fragment = null;
 };
 
 module.exports = ViewManager;

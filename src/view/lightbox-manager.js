@@ -22,6 +22,9 @@ function LightBoxManager (selector, viewManager) {
     self._titleBar = null;
     self._currentViewingImageIndex = -1;
     self._lightBoxImageMap = {};
+    // each detailed image is about 120KB
+    // 200 will be taking around 24MB space
+    self.LIGHTBOX_MAX_CACHE_SIZE = 200;
     self.init();
 }
 
@@ -229,8 +232,34 @@ LightBoxManager.prototype.render = function (linkNode) {
     img.onload = self._imgOnLoadCallBack.bind(self, img);
     self._viewManager.showLoadingBar();
     // save img node to map, so we don't have to fetch again if user clicks on the same image
-    self._lightBoxImageMap[self._currentViewingImageIndex] = img;
+    self._addToLightBoxImageMap(self._currentViewingImageIndex, img);
     self._whiteOverlay.appendChild(img);
+};
+
+/**
+* Add image element to lightbox map and maintain the LIGHTBOX_MAX_CACHE_SIZE
+* @param {string} index
+* @param {HTMLElement} imgNode
+* @private
+*/
+LightBoxManager.prototype._addToLightBoxImageMap = function (index, img) {
+    var self = this;
+    var len = Object.keys(self._lightBoxImageMap).length;
+    // get current startIndex and endIndex (both ends) in the current cache
+    var startIndex = Object.keys(self._lightBoxImageMap)[0];
+    var endIndex = Object.keys(self._lightBoxImageMap)[len - 1];
+
+    // compare to see the new index is close to startIndex or endIndex
+    // we will remove one of the ends that is further away from the new index when
+    // we reach the max cache size
+    if (len + 1 > self.LIGHTBOX_MAX_CACHE_SIZE) {
+        if (Math.abs(index - startIndex) > Math.abs(endIndex - index)) {
+            delete self._lightBoxImageMap[startIndex];
+        } else {
+            delete self._lightBoxImageMap[endIndex];
+        }
+    }
+    self._lightBoxImageMap[index] = img;
 };
 
 /**
@@ -280,7 +309,7 @@ LightBoxManager.prototype._turnOffLightBox = function () {
     self._nextNav.style.display = 'none';
     self._prevNav.style.display = 'none';
     self._titleBar.style.display = 'none';
-    self.detachImageFromLightBox();
+    self._detachImageFromLightBox();
 }
 
 /**
@@ -306,6 +335,28 @@ LightBoxManager.prototype._imgOnLoadCallBack = function () {
 LightBoxManager.prototype.destroyLightBoxImageMap = function () {
     var self = this;
     self._lightBoxImageMap = {};
+};
+
+/**
+* Destroy LightBoxManager
+* @public
+*/
+LightBoxManager.prototype.destroy = function () {
+    var self = this;
+    self._selector.removeChild(self._whiteOverlay);
+    self._selector.removeChild(self._blackOverlay);
+    self._selector.removeChild(self._nextNav);
+    self._selector.removeChild(self._prevNav);
+    self._selector.removeChild(self._titleBar);
+    self._selector = null;
+    self._viewManager = null;
+    self._document = null;
+    self._whiteOverlay = null;
+    self._blackOverlay = null;
+    self._nextNav = null;
+    self._prevNav = null;
+    self._titleBar = null;
+    self._lightBoxImageMap = null;
 };
 
 module.exports = LightBoxManager;

@@ -173,3 +173,22 @@ input#search-bar{
     background: url('./loading.gif') no-repeat center center;
     z-index:2000;
 }
+
+#warning{
+    display: none;
+    position: absolute; 
+    white-space:nowrap;
+    margin:0 5px 0 10px;
+    height:25px;
+    border-radius: 5px;
+    padding: 0 25px 0 15px;
+    background:#E8EDF0;
+    border: 0 solid #C7D2D4;
+    border-top-width:1px;
+    border-bottom-width:1px;
+    color:#999;
+    line-height:23px;
+    top: 95%;
+    left: 40%;
+    z-index:2000;
+}

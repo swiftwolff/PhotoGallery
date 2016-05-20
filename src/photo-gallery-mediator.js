@@ -36,8 +36,25 @@ PhotoGalleryMediator.prototype.search = function (keyword) {
 */
 PhotoGalleryMediator.prototype.clear = function () {
     var self = this;
-    self._dataManager.clearImageData();
+    self._dataManager.destroy();
     self._viewManager.clearImageView();
+};
+
+/**
+* Destroy all the data and related dom nodes
+* @public
+*/
+PhotoGalleryMediator.prototype.destroy = function () {
+    var self = this;
+    self._apiManager.destroy();
+    self._dataManager.destroy();
+    self._viewManager.destroy();
+    self._loadManager.destroy();
+    self._photogallery = null;
+    self._apiManager = null;
+    self._dataManager = null;
+    self._viewManager = null;
+    self._loadManager = null;
 };
 
 module.exports = PhotoGalleryMediator;

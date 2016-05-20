@@ -31,4 +31,14 @@ APIManager.prototype.search = function (keyword) {
     });
 };
 
+/**
+* Destroy API Manager
+* @public
+*/
+APIManager.prototype.destroy = function () {
+    var self = this;
+    self._apis = [];
+    self._mediator = null;
+};
+
 module.exports = APIManager;

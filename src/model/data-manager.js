@@ -36,7 +36,7 @@ DataManager.prototype.append = function (resp, cb) {
 * Clear image data array and reset the starting image index
 * @public
 */
-DataManager.prototype.clearImageData = function () {
+DataManager.prototype.destroy = function () {
     var self = this;
     self._imageData = [];
     self._startImageDataIndex = 0;
