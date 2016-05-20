@@ -37,7 +37,7 @@ DataManager.prototype.append = function (resp, cb) {
 * Clear image data array and reset the starting image index
 * @public
 */
-DataManager.prototype.clearImageData = function () {
+DataManager.prototype.destroy = function () {
     var self = this;
     self._imageData = [];
     self._startImageDataIndex = 0;
@@ -97,11 +97,29 @@ PhotoGalleryMediator.prototype.search = function (keyword) {
 */
 PhotoGalleryMediator.prototype.clear = function () {
     var self = this;
-    self._dataManager.clearImageData();
+    self._dataManager.destroy();
     self._viewManager.clearImageView();
 };
 
+/**
+* Destroy all the data and related dom nodes
+* @public
+*/
+PhotoGalleryMediator.prototype.destroy = function () {
+    var self = this;
+    self._apiManager.destroy();
+    self._dataManager.destroy();
+    self._viewManager.destroy();
+    self._loadManager.destroy();
+    self._photogallery = null;
+    self._apiManager = null;
+    self._dataManager = null;
+    self._viewManager = null;
+    self._loadManager = null;
+};
+
 module.exports = PhotoGalleryMediator;
+
 },{"./model/data-manager":1,"./service/api-manager":4,"./service/load-manager":6,"./view/view-manager":8}],4:[function(require,module,exports){
 'use strict';
 var APIS = require('./api/api');
@@ -136,7 +154,18 @@ APIManager.prototype.search = function (keyword) {
     });
 };
 
+/**
+* Destroy API Manager
+* @public
+*/
+APIManager.prototype.destroy = function () {
+    var self = this;
+    self._apis = [];
+    self._mediator = null;
+};
+
 module.exports = APIManager;
+
 },{"./api/api":5}],5:[function(require,module,exports){
 'use strict';
 
@@ -232,7 +261,10 @@ function LoadManager (mediator) {
 LoadManager.prototype.load = function (url, cb) {
     var self = this;
     self._xhr.onreadystatechange = function () {
-        if (self._xhr.readyState == 4 && self._xhr.status == 200) {
+        if (self._xhr.status && self._xhr.status < 200 || self._xhr.status >= 300) {
+            self._mediator._viewManager.showWarning('No data available!', 2);
+        }
+        if (self._xhr.status && self._xhr.readyState == 4 && self._xhr.status == 200) {
             var respObj = JSON.parse(self._xhr.responseText);
             self._mediator._dataManager.append(respObj, cb);
             self._mediator._viewManager.hideLoadingBar();
@@ -261,7 +293,18 @@ LoadManager.prototype.buildUrl = function (url, parameters) {
     return url;
 };
 
+/**
+* Destroy LoadManager
+* @public
+*/
+LoadManager.prototype.destroy = function () {
+    var self = this;
+    self._mediator = null;
+    self._xhr = null;
+};
+
 module.exports = LoadManager;
+
 },{}],7:[function(require,module,exports){
 /* globals window */
 /* globals document */
@@ -287,6 +330,9 @@ function LightBoxManager (selector, viewManager) {
     self._titleBar = null;
     self._currentViewingImageIndex = -1;
     self._lightBoxImageMap = {};
+    // each detailed image is about 120KB
+    // 200 will be taking around 24MB space
+    self.LIGHTBOX_MAX_CACHE_SIZE = 200;
     self.init();
 }
 
@@ -494,8 +540,34 @@ LightBoxManager.prototype.render = function (linkNode) {
     img.onload = self._imgOnLoadCallBack.bind(self, img);
     self._viewManager.showLoadingBar();
     // save img node to map, so we don't have to fetch again if user clicks on the same image
-    self._lightBoxImageMap[self._currentViewingImageIndex] = img;
+    self._addToLightBoxImageMap(self._currentViewingImageIndex, img);
     self._whiteOverlay.appendChild(img);
+};
+
+/**
+* Add image element to lightbox map and maintain the LIGHTBOX_MAX_CACHE_SIZE
+* @param {string} index
+* @param {HTMLElement} imgNode
+* @private
+*/
+LightBoxManager.prototype._addToLightBoxImageMap = function (index, img) {
+    var self = this;
+    var len = Object.keys(self._lightBoxImageMap).length;
+    // get current startIndex and endIndex (both ends) in the current cache
+    var startIndex = Object.keys(self._lightBoxImageMap)[0];
+    var endIndex = Object.keys(self._lightBoxImageMap)[len - 1];
+
+    // compare to see the new index is close to startIndex or endIndex
+    // we will remove one of the ends that is further away from the new index when
+    // we reach the max cache size
+    if (len + 1 > self.LIGHTBOX_MAX_CACHE_SIZE) {
+        if (Math.abs(index - startIndex) > Math.abs(endIndex - index)) {
+            delete self._lightBoxImageMap[startIndex];
+        } else {
+            delete self._lightBoxImageMap[endIndex];
+        }
+    }
+    self._lightBoxImageMap[index] = img;
 };
 
 /**
@@ -545,7 +617,7 @@ LightBoxManager.prototype._turnOffLightBox = function () {
     self._nextNav.style.display = 'none';
     self._prevNav.style.display = 'none';
     self._titleBar.style.display = 'none';
-    self.detachImageFromLightBox();
+    self._detachImageFromLightBox();
 }
 
 /**
@@ -573,6 +645,28 @@ LightBoxManager.prototype.destroyLightBoxImageMap = function () {
     self._lightBoxImageMap = {};
 };
 
+/**
+* Destroy LightBoxManager
+* @public
+*/
+LightBoxManager.prototype.destroy = function () {
+    var self = this;
+    self._selector.removeChild(self._whiteOverlay);
+    self._selector.removeChild(self._blackOverlay);
+    self._selector.removeChild(self._nextNav);
+    self._selector.removeChild(self._prevNav);
+    self._selector.removeChild(self._titleBar);
+    self._selector = null;
+    self._viewManager = null;
+    self._document = null;
+    self._whiteOverlay = null;
+    self._blackOverlay = null;
+    self._nextNav = null;
+    self._prevNav = null;
+    self._titleBar = null;
+    self._lightBoxImageMap = null;
+};
+
 module.exports = LightBoxManager;
 
 },{}],8:[function(require,module,exports){
@@ -596,13 +690,17 @@ function ViewManager (mediator, selector) {
     self._imageDetailData = [];
     self._selector = selector;
     self._viewElement = null;
+    self._fragment = null;
     self._loadingBar = self.createLoadingBar();
+    self._warningDiv = self.createWarningDiv();
     self._selector.appendChild(self._loadingBar);
+    self._selector.appendChild(self._warningDiv);
     self._lightboxManager = new LightBoxManager(selector, self);
 }
 
 /**
 * Make loading bar
+* @returns {HTMLElement} loadingBar
 * @public
 */
 ViewManager.prototype.createLoadingBar = function () {
@@ -612,8 +710,22 @@ ViewManager.prototype.createLoadingBar = function () {
     }
     var loadingBar = self._document.createElement('div');
     loadingBar.id = 'loading';
-
     return loadingBar;
+};
+
+/**
+* Make loading bar
+* @public
+*/
+ViewManager.prototype.createWarningDiv = function () {
+    var self = this;
+    if (self._warningDiv) {
+        return;
+    }
+    var warningDiv = self._document.createElement('div');
+    warningDiv.id = 'warning';
+
+    return warningDiv;
 };
 
 /**
@@ -705,7 +817,10 @@ ViewManager.prototype.createViewElement = function () {
 ViewManager.prototype.clearImageView = function () {
     var self = this;
     if (self._viewElement) {
-        self._viewElement.remove();
+        // remove all the children
+        while (self._viewElement.firstChild) {
+            self._viewElement.removeChild(self._viewElement.firstChild);
+        }
         self._viewElement = null;
         self._imageViewData = [];
         self._lightboxManager.destroyLightBoxImageMap();
@@ -721,9 +836,62 @@ ViewManager.prototype.renderGallery = function (startIndex) {
     if (!self._viewElement) {
         self.createViewElement();
     }
+    self._fragment = self._document.createDocumentFragment();
     for (var i = startIndex; i < self._imageViewData.length; i++) {
-        self._viewElement.appendChild(self._imageViewData[i]);
+        self._fragment.appendChild(self._imageViewData[i]);
     }
+    self._viewElement.appendChild(self._fragment);
+};
+
+/**
+* Show warning message for a period of time
+* @param {string} description - description of the warning
+* @param {duration} duration - duration of the warning in sec
+* @private
+*/
+ViewManager.prototype.showWarning = function (description, sec) {
+    var self = this;
+    self._warningDiv.innerHTML = description;
+    self._warningDiv.style.display = 'block';
+    self._warningDiv.style.marginTop = window.scrollY;
+    var callback = function () {
+        self._hideWarning();
+    };
+    setTimeout(callback, sec * 1000);
+};
+
+/**
+* Hide warning message
+* @private
+*/
+ViewManager.prototype._hideWarning = function () {
+    var self = this;
+    self._warningDiv.style.display = 'none';
+};
+
+/**
+* Destroy View Manager
+* @private
+*/
+ViewManager.prototype.destroy = function () {
+    var self = this;
+    self._selector.removeChild(self._loadingBar);
+    self._selector.removeChild(self._warningDiv);
+    if (self._viewElement) {
+        self._selector.removeChild(self._viewElement);
+    }
+    self.clearImageView();
+    self._lightboxManager.destroy();
+    self._document = null;
+    self._mediator = null;
+    self._imageViewData = null;
+    self._imageDetailData = null;
+    self._selector = null;
+    self._viewElement = null;
+    self._loadingBar = null;
+    self._warningDiv = null;
+    self._lightboxManager = null;
+    self._fragment = null;
 };
 
 module.exports = ViewManager;
@@ -781,6 +949,18 @@ PhotoGallery.prototype.nextPage = function () {
         self.search(self._currentKeyword);
         self._lastScrollingToEndTimestamp = Date.now();
     }
+};
+
+/**
+* Destroy photo gallery instance
+* @public
+*/
+PhotoGallery.prototype.destroy = function () {
+    var self = this;
+    if (self._mediator) {
+        self._mediator.destroy();
+    }
+    self._mediator = null;
 };
 
 module.exports = PhotoGallery;
